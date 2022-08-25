@@ -1,88 +1,49 @@
-import ContactForm from "./ContactForm/ContactForm";
-import ContactList from "./Contacts/ContactList";
-import Filter from "./Contacts/Filter";
-import React from "react";
-import { Component } from "react";
-import { nanoid } from "nanoid";
+import React from 'react';
+import { Component } from 'react';
+import Searchbar from './Searchbar/Searchbar';
+import ImageGallery from './ImageGallery/ImageGallery';
+import axios from 'axios';
+
 
 class App extends Component {
+  state = {
+    imageName: '',
+    images :[],
+    page :1,
+    error :false,
+    loading:false,
+  };
+componentDidUpdate(_,prevState){
 
-    state = {
-    contacts: [
-      {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-      {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-      {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-      {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-    ],
-    filter: ''
-  }
-
-    addContact = (data) =>{
-      const {contacts} = this.state;
-      const isDublicate = contacts.find(item =>item.name === data.name)
-      if(isDublicate){
-         return alert (`${data.name} is already in contacts`)
-      }
-    this.setState(prevState => {
-      const newContact = {
-        id: nanoid(),
-        ...data
-      };
-       return {
-        contacts: [...prevState.contacts, newContact]
-       }
+  if(this.state.imageName !== prevState.imageName){
+    this.setState({loading: true})
+    axios.get(`https://pixabay.com/api/?q=${this.state.imageName}&page=${this.state.page}&key=28680775-d5d2c94020fa583a98c0796ee&image_type=photo&orientation=horizontal&per_page=12`)
+    .then(({data}) => {
+      this.setState({
+        images : data.hits
+      })
     })
+    .catch(alert("Ничего не найдено :("))
+    .finally(this.setState({loading: false}))
+
   }
 
-  onChangeFilter = (e) =>{
-  const {name,value} = e.currentTarget
-  this.setState({[name] :value})
+
+
+
 }
-
-getFilteredContacts = () =>{
-  const {filter,contacts} = this.state;
-  const normalizedFilter = filter.toLowerCase();
-
-  return contacts.filter(contact =>
-    contact.name.toLowerCase().includes(normalizedFilter));
-}
-
-
-
-deleteContact = (id)=>{
-  this.setState(({contacts})=>{
-    const newContactList = contacts.filter(item => item.id !==id)
-    return {
-      contacts : newContactList
-    }
-  })
-}
-
+  handleSearchFormSubmit = imageName => {
+    this.setState({ imageName });
+  };
 
   render() {
-
-    const {addContact,onChangeFilter,deleteContact} = this;
-    const {filter} = this.state;
-    const filteredContacts = this.getFilteredContacts()
     return (
-      <div>
-      <h1>Phonebook</h1>
-      <ContactForm onSubmit = {addContact}/>
-
-      <h2>Contacts</h2>
-      <Filter type="text"
-      name="filter"
-      pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-      title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-      required
-      value = {filter}
-      onChangeFilter = {onChangeFilter}
-  />
-      <ContactList items = {filteredContacts} deleteContact ={deleteContact}/>
-    </div>
-      )
+      <>
+        <Searchbar onSubmit={this.handleSearchFormSubmit} />
+        <ImageGallery images ={this.state.images}/>
+      </>
+    );
   }
-
 }
 
-export default App
+export default App;
