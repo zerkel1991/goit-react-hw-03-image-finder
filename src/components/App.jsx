@@ -19,7 +19,7 @@ class App extends Component {
   };
   componentDidUpdate(_, prevState) {
     if (prevState.imageName !== this.state.imageName) {
-      this.setState({ loading: true});
+      this.setState({ loading: true,page : 1});
       axios
         .get(
           `https://pixabay.com/api/?q=${this.state.imageName}&page=${this.state.page}&key=29503826-8199b1172087c43264700da9d&image_type=photo&orientation=horizontal&per_page=12`
@@ -27,12 +27,12 @@ class App extends Component {
         .then(({ data }) => {
           this.setState(() => ({
             images: [...data.hits],
-            page: 1,
             totalhits: data.totalHits,
+            page : 1,
           }));
         })
         .catch(error => console.log(error))
-        .finally(() => this.setState({ loading: false }));
+        .finally(() => this.setState({ loading: false,}));
     }
      if (prevState.page !== this.state.page && this.state.page !== 1) {
       axios
@@ -46,11 +46,12 @@ class App extends Component {
           }));
         })
         .catch(error => console.log(error))
-        .finally(() => this.setState({ loading: false }));
+        .finally(() => this.setState({ loading: false,}));
     }
   }
   handleSearchFormSubmit = imageName => {
     this.setState({ imageName });
+    this.setState({page : 1})
   };
 
   loadmore = () => {
