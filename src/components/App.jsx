@@ -19,7 +19,7 @@ class App extends Component {
   };
   componentDidUpdate(_, prevState) {
     if (prevState.imageName !== this.state.imageName) {
-      this.setState({ loading: true });
+      this.setState({ loading: true});
       axios
         .get(
           `https://pixabay.com/api/?q=${this.state.imageName}&page=${this.state.page}&key=29503826-8199b1172087c43264700da9d&image_type=photo&orientation=horizontal&per_page=12`
@@ -34,7 +34,7 @@ class App extends Component {
         .catch(error => console.log(error))
         .finally(() => this.setState({ loading: false }));
     }
-    if (prevState.page !== this.state.page) {
+     if (prevState.page !== this.state.page && this.state.page !== 1) {
       axios
         .get(
           `https://pixabay.com/api/?q=${this.state.imageName}&page=${this.state.page}&key=29503826-8199b1172087c43264700da9d&image_type=photo&orientation=horizontal&per_page=12`
